@@ -1,7 +1,6 @@
 package com.ururu2909.firstapp;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,8 +26,8 @@ public class ContactDetailsFragment extends Fragment {
         getActivity().setTitle("Детали контакта");
         View view = inflater.inflate(R.layout.fragment_contact_details, container, false);
         int index = this.getArguments().getInt("index");
-        TextView contactName = (TextView) view.findViewById(R.id.textView3);
-        TextView contactPhoneNumber = (TextView) view.findViewById(R.id.textView4);
+        TextView contactName = (TextView) view.findViewById(R.id.contactDetailsName);
+        TextView contactPhoneNumber = (TextView) view.findViewById(R.id.contactDetailsPhoneNumber);
         contactName.setText(ContactListFragment.contacts[index].getName());
         contactPhoneNumber.setText(ContactListFragment.contacts[index].getPhoneNumber());
         return view;
