@@ -55,7 +55,7 @@
     <TextView
         android:id="@+id/contactDetailsPhoneNumber2"
         android:layout_width="0dp"
-        android:layout_height="27dp"
+        android:layout_height="28dp"
         android:layout_marginStart="32dp"
         android:layout_marginLeft="32dp"
         android:layout_marginTop="20dp"
@@ -71,7 +71,7 @@
     <TextView
         android:id="@+id/contactDetailsEmail"
         android:layout_width="0dp"
-        android:layout_height="27dp"
+        android:layout_height="28dp"
         android:layout_marginStart="32dp"
         android:layout_marginLeft="32dp"
         android:layout_marginTop="20dp"
@@ -87,7 +87,7 @@
     <TextView
         android:id="@+id/contactDetailsEmail2"
         android:layout_width="0dp"
-        android:layout_height="27dp"
+        android:layout_height="28dp"
         android:layout_marginStart="32dp"
         android:layout_marginLeft="32dp"
         android:layout_marginTop="20dp"
