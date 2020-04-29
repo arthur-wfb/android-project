@@ -42,23 +42,19 @@ public class ContactListFragment extends ListFragment {
             }
         };
         setListAdapter(contactAdapter);
-
-        FragmentManager fm = getFragmentManager();
-        fm.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
-            @Override
-            public void onBackStackChanged() {
-                if (getFragmentManager().getBackStackEntryCount() == 0){
-                    getActivity().setTitle("Список контактов");
-                }
-            }
-        });
     }
 
     @Override
     public void onListItemClick(@NonNull ListView l, @NonNull View v, int position, long id) {
         ContactDetailsFragment detailsFragment = ContactDetailsFragment.newInstance((int) id);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.add(R.id.fragment_list, detailsFragment).addToBackStack(null);
+        ft.replace(R.id.container, detailsFragment).addToBackStack(null);
         ft.commit();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getActivity().setTitle("Список контактов");
     }
 }
