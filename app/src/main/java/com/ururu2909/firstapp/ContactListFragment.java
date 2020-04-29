@@ -13,7 +13,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.fragment.app.ListFragment;
 
 public class ContactListFragment extends ListFragment {
-    static Contact[] contacts = {
+    static final Contact[] contacts = {
             new Contact("Мама", "10987654321"),
             new Contact("Юлий Цезарь", "12345678910")
     };

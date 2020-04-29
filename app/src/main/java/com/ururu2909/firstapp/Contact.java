@@ -1,8 +1,8 @@
 package com.ururu2909.firstapp;
 
 class Contact {
-    private String name;
-    private String phoneNumber;
+    private final String name;
+    private final String phoneNumber;
 
     Contact(String name, String phoneNumber){
         this.name = name;
