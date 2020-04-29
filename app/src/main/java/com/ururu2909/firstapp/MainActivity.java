@@ -13,10 +13,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ContactListFragment fragment = new ContactListFragment();
-        ft.add(R.id.container, fragment);
-        ft.commit();
+        if (savedInstanceState == null){
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            ContactListFragment fragment = new ContactListFragment();
+            ft.add(R.id.container, fragment);
+            ft.commit();
+        }
     }
 }
