@@ -1,6 +1,8 @@
 package com.ururu2909.firstapp;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -12,19 +14,35 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.fragment.app.ListFragment;
 
+import java.util.concurrent.ExecutionException;
+
 public class ContactListFragment extends ListFragment {
     private ContactsService mService;
+    Contact[] contacts;
 
-    ContactListFragment(ContactsService mService){
-        super();
-        this.mService = mService;
+    public interface CanGetService {
+        ContactsService getService();
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof CanGetService){
+            this.mService = ((CanGetService) context).getService();
+        }
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().setTitle("Список контактов");
-        final Contact[] contacts = mService.getContacts();
+
+        try {
+            contacts = mService.getContacts();
+        } catch (ExecutionException | InterruptedException | NullPointerException e){
+            Log.d("exc", e.getMessage());
+        }
+
         ArrayAdapter<Contact> contactAdapter = new ArrayAdapter<Contact>(getActivity(), 0, contacts){
             @NonNull
             @Override
@@ -48,7 +66,7 @@ public class ContactListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(@NonNull ListView l, @NonNull View v, int position, long id) {
-        ContactDetailsFragment detailsFragment = ContactDetailsFragment.newInstance((int) id, mService);
+        ContactDetailsFragment detailsFragment = ContactDetailsFragment.newInstance((int) id);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.container, detailsFragment).addToBackStack(null);
         ft.commit();

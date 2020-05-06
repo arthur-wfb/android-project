@@ -12,7 +12,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import com.ururu2909.firstapp.ContactsService.MyBinder;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ContactListFragment.CanGetService {
     ContactsService mService;
     boolean mBound = false;
 
@@ -22,20 +22,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null){
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Intent intent = new Intent(MainActivity.this, ContactsService.class);
-                    bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-                }
-            });
-            thread.start();
+            Intent intent = new Intent(MainActivity.this, ContactsService.class);
+            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         }
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         unbindService(mConnection);
     }
 
@@ -57,8 +51,13 @@ public class MainActivity extends AppCompatActivity {
     private void addContactListFragment(){
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ContactListFragment fragment = new ContactListFragment(mService);
+        ContactListFragment fragment = new ContactListFragment();
         ft.add(R.id.container, fragment);
         ft.commit();
+    }
+
+    @Override
+    public ContactsService getService() {
+        return mBound ? mService : null;
     }
 }
