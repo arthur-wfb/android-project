@@ -9,20 +9,22 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.fragment.app.ListFragment;
 
 public class ContactListFragment extends ListFragment {
-    static final Contact[] contacts = {
-            new Contact("Мама", "10987654321"),
-            new Contact("Юлий Цезарь", "12345678910")
-    };
+    private ContactsService mService;
+
+    ContactListFragment(ContactsService mService){
+        super();
+        this.mService = mService;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().setTitle("Список контактов");
+        final Contact[] contacts = mService.getContacts();
         ArrayAdapter<Contact> contactAdapter = new ArrayAdapter<Contact>(getActivity(), 0, contacts){
             @NonNull
             @Override
@@ -46,7 +48,7 @@ public class ContactListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(@NonNull ListView l, @NonNull View v, int position, long id) {
-        ContactDetailsFragment detailsFragment = ContactDetailsFragment.newInstance((int) id);
+        ContactDetailsFragment detailsFragment = ContactDetailsFragment.newInstance((int) id, mService);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.container, detailsFragment).addToBackStack(null);
         ft.commit();
