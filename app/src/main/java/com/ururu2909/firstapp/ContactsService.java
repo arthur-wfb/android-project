@@ -5,14 +5,12 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
+import java.lang.ref.WeakReference;
 
 public class ContactsService extends Service {
     private final IBinder mBinder = new MyBinder();
 
-    public class MyBinder extends Binder {
+    class MyBinder extends Binder {
         ContactsService getService() {
             return ContactsService.this;
         }
@@ -23,26 +21,32 @@ public class ContactsService extends Service {
         return mBinder;
     }
 
-    public Contact[] getContacts() throws ExecutionException, InterruptedException {
-        FutureTask<Contact[]> future = new FutureTask<>(new Callable<Contact[]>() {
+    public void getContacts(ContactListFragment.ResultListener callback){
+        final WeakReference<ContactListFragment.ResultListener> ref = new WeakReference<>(callback);
+        new Thread(new Runnable() {
             @Override
-            public Contact[] call() throws Exception {
-                return Contact.contacts;
+            public void run() {
+                Contact[] result = Contact.contacts;
+                ContactListFragment.ResultListener local = ref.get();
+                if (local != null){
+                    local.onComplete(result);
+                }
             }
-        });
-        new Thread(future).start();
-        return future.get();
+        }).start();
     }
 
-    public Contact getContact(int id) throws ExecutionException, InterruptedException {
+    public void getContact(ContactDetailsFragment.ResultListener callback, int id){
+        final WeakReference<ContactDetailsFragment.ResultListener> ref = new WeakReference<>(callback);
         final int index = id;
-        FutureTask<Contact> future = new FutureTask<>(new Callable<Contact>() {
+        new Thread(new Runnable() {
             @Override
-            public Contact call() throws Exception {
-                return Contact.contacts[index];
+            public void run() {
+                Contact result = Contact.contacts[index];
+                ContactDetailsFragment.ResultListener local = ref.get();
+                if (local != null){
+                    local.onComplete(result);
+                }
             }
-        });
-        new Thread(future).start();
-        return future.get();
+        }).start();
     }
 }

@@ -2,7 +2,6 @@ package com.ururu2909.firstapp;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -14,54 +13,27 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.fragment.app.ListFragment;
 
-import java.util.concurrent.ExecutionException;
-
 public class ContactListFragment extends ListFragment {
     private ContactsService mService;
-    Contact[] contacts;
 
-    public interface CanGetService {
-        ContactsService getService();
+    public interface ResultListener {
+        void onComplete(Contact[] result);
     }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof CanGetService){
-            this.mService = ((CanGetService) context).getService();
+        if (context instanceof ServiceProvider){
+            this.mService = ((ServiceProvider) context).getService();
         }
     }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().setTitle("Список контактов");
-
-        try {
-            contacts = mService.getContacts();
-        } catch (ExecutionException | InterruptedException | NullPointerException e){
-            Log.d("exc", e.getMessage());
-        }
-
-        ArrayAdapter<Contact> contactAdapter = new ArrayAdapter<Contact>(getActivity(), 0, contacts){
-            @NonNull
-            @Override
-            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                if (convertView == null){
-                    convertView = getLayoutInflater().inflate(R.layout.fragment_contact, null, false);
-                }
-                TextView nameView = (TextView) convertView.findViewById(R.id.contactName);
-                TextView phoneNumberView = (TextView) convertView.findViewById(R.id.contactPhoneNumber);
-
-                Contact currentContact = contacts[position];
-
-                nameView.setText(currentContact.getName());
-                phoneNumberView.setText(currentContact.getPhoneNumber());
-
-                return convertView;
-            }
-        };
-        setListAdapter(contactAdapter);
+        mService.getContacts(callback);
     }
 
     @Override
@@ -77,4 +49,37 @@ public class ContactListFragment extends ListFragment {
         super.onStart();
         getActivity().setTitle("Список контактов");
     }
+
+    private ResultListener callback = new ResultListener() {
+        @Override
+        public void onComplete(Contact[] result) {
+            final Contact[] contacts = result;
+            ArrayAdapter<Contact> contactAdapter = new ArrayAdapter<Contact>(getActivity(), 0, contacts){
+                @NonNull
+                @Override
+                public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                    if (convertView == null){
+                        convertView = getLayoutInflater().inflate(R.layout.fragment_contact, null, false);
+                    }
+                    final TextView nameView = (TextView) convertView.findViewById(R.id.contactName);
+                    final TextView phoneNumberView = (TextView) convertView.findViewById(R.id.contactPhoneNumber);
+                    final Contact currentContact = contacts[position];
+                    nameView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            nameView.setText(currentContact.getName());
+                        }
+                    });
+                    phoneNumberView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            phoneNumberView.setText(currentContact.getPhoneNumber());
+                        }
+                    });
+                    return convertView;
+                }
+            };
+            setListAdapter(contactAdapter);
+        }
+    };
 }

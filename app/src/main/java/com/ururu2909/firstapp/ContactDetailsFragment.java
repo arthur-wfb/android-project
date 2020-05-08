@@ -2,7 +2,6 @@ package com.ururu2909.firstapp;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,17 +11,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.util.concurrent.ExecutionException;
-
 public class ContactDetailsFragment extends Fragment {
     private ContactsService mService;
-    Contact contact;
+    private TextView contactName;
+    private TextView contactPhoneNumber;
+
+    interface ResultListener {
+        void onComplete(Contact result);
+    }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof ContactListFragment.CanGetService){
-            this.mService = ((ContactListFragment.CanGetService) context).getService();
+        if (context instanceof ServiceProvider){
+            this.mService = ((ServiceProvider) context).getService();
         }
     }
 
@@ -40,17 +42,35 @@ public class ContactDetailsFragment extends Fragment {
         getActivity().setTitle("Детали контакта");
         View view = inflater.inflate(R.layout.fragment_contact_details, container, false);
         int index = this.getArguments().getInt("index");
-
-        try {
-            contact = mService.getContact(index);
-        } catch (ExecutionException | InterruptedException | NullPointerException e){
-            Log.d("exc", e.getMessage());
-        }
-
-        TextView contactName = (TextView) view.findViewById(R.id.contactDetailsName);
-        TextView contactPhoneNumber = (TextView) view.findViewById(R.id.contactDetailsPhoneNumber);
-        contactName.setText(contact.getName());
-        contactPhoneNumber.setText(contact.getPhoneNumber());
+        contactName = (TextView) view.findViewById(R.id.contactDetailsName);
+        contactPhoneNumber = (TextView) view.findViewById(R.id.contactDetailsPhoneNumber);
+        mService.getContact(callback, index);
         return view;
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        contactName = null;
+        contactPhoneNumber = null;
+    }
+
+    private ContactDetailsFragment.ResultListener callback = new ContactDetailsFragment.ResultListener() {
+        @Override
+        public void onComplete(Contact result) {
+            final Contact contact = result;
+            contactName.post(new Runnable() {
+                @Override
+                public void run() {
+                    contactName.setText(contact.getName());
+                }
+            });
+            contactPhoneNumber.post(new Runnable() {
+                @Override
+                public void run() {
+                    contactPhoneNumber.setText(contact.getPhoneNumber());
+                }
+            });
+        }
+    };
 }

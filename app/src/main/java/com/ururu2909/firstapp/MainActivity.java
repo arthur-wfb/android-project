@@ -12,18 +12,19 @@ import android.os.Bundle;
 import android.os.IBinder;
 import com.ururu2909.firstapp.ContactsService.MyBinder;
 
-public class MainActivity extends AppCompatActivity implements ContactListFragment.CanGetService {
+public class MainActivity extends AppCompatActivity implements ServiceProvider {
     ContactsService mService;
     boolean mBound = false;
+    boolean createdFirstTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        Intent intent = new Intent(MainActivity.this, ContactsService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         if (savedInstanceState == null){
-            Intent intent = new Intent(MainActivity.this, ContactsService.class);
-            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+             createdFirstTime = true;
         }
     }
 
@@ -39,7 +40,9 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             MyBinder binder = (MyBinder) service;
             mService = binder.getService();
             mBound = true;
-            addContactListFragment();
+            if (createdFirstTime){
+                addContactListFragment();
+            }
         }
 
         @Override
@@ -58,6 +61,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     @Override
     public ContactsService getService() {
-        return mBound ? mService : null;
+        return mService;
     }
 }
