@@ -15,7 +15,7 @@ import com.ururu2909.firstapp.ContactsService.MyBinder;
 public class MainActivity extends AppCompatActivity implements ServiceProvider {
     ContactsService mService;
     boolean mBound = false;
-    boolean createdFirstTime;
+    Object createdFirstTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,9 +23,7 @@ public class MainActivity extends AppCompatActivity implements ServiceProvider {
         setContentView(R.layout.activity_main);
         Intent intent = new Intent(MainActivity.this, ContactsService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        if (savedInstanceState == null){
-             createdFirstTime = true;
-        }
+        createdFirstTime = savedInstanceState;
     }
 
     @Override
@@ -40,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements ServiceProvider {
             MyBinder binder = (MyBinder) service;
             mService = binder.getService();
             mBound = true;
-            if (createdFirstTime){
+            if (createdFirstTime == null){
                 addContactListFragment();
             }
         }

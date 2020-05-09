@@ -17,9 +17,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".ContactsService">
-
-        </service>
+        <service android:name=".ContactsService" />
     </application>
 
 </manifest>

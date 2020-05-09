@@ -16,13 +16,14 @@
         android:contentDescription="@string/contact_image"
         app:layout_constraintEnd_toStartOf="@+id/contactDetailsName"
         app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:mipmap/sym_def_app_icon" />
 
     <TextView
         android:id="@+id/contactDetailsName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="110dp"
         android:layout_marginStart="20dp"
         android:layout_marginLeft="20dp"

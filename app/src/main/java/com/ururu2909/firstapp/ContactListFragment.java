@@ -1,7 +1,6 @@
 package com.ururu2909.firstapp;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -15,6 +14,7 @@ import androidx.fragment.app.ListFragment;
 
 public class ContactListFragment extends ListFragment {
     private ContactsService mService;
+    private View view;
 
     public interface ResultListener {
         void onComplete(Contact[] result);
@@ -26,14 +26,6 @@ public class ContactListFragment extends ListFragment {
         if (context instanceof ServiceProvider){
             this.mService = ((ServiceProvider) context).getService();
         }
-    }
-
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        getActivity().setTitle("Список контактов");
-        mService.getContacts(callback);
     }
 
     @Override
@@ -48,38 +40,37 @@ public class ContactListFragment extends ListFragment {
     public void onStart() {
         super.onStart();
         getActivity().setTitle("Список контактов");
+        view = getView();
+        mService.getContacts(callback);
     }
 
     private ResultListener callback = new ResultListener() {
         @Override
         public void onComplete(Contact[] result) {
             final Contact[] contacts = result;
-            ArrayAdapter<Contact> contactAdapter = new ArrayAdapter<Contact>(getActivity(), 0, contacts){
-                @NonNull
-                @Override
-                public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                    if (convertView == null){
-                        convertView = getLayoutInflater().inflate(R.layout.fragment_contact, null, false);
+            if (view != null){
+                view.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        final ArrayAdapter<Contact> contactAdapter = new ArrayAdapter<Contact>(getActivity(), 0, contacts){
+                            @NonNull
+                            @Override
+                            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                                if (convertView == null){
+                                    convertView = getLayoutInflater().inflate(R.layout.fragment_contact, null, false);
+                                }
+                                TextView nameView = (TextView) convertView.findViewById(R.id.contactName);
+                                TextView phoneNumberView = (TextView) convertView.findViewById(R.id.contactPhoneNumber);
+                                Contact currentContact = contacts[position];
+                                nameView.setText(currentContact.getName());
+                                phoneNumberView.setText(currentContact.getPhoneNumber());
+                                return convertView;
+                            }
+                        };
+                        setListAdapter(contactAdapter);
                     }
-                    final TextView nameView = (TextView) convertView.findViewById(R.id.contactName);
-                    final TextView phoneNumberView = (TextView) convertView.findViewById(R.id.contactPhoneNumber);
-                    final Contact currentContact = contacts[position];
-                    nameView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            nameView.setText(currentContact.getName());
-                        }
-                    });
-                    phoneNumberView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            phoneNumberView.setText(currentContact.getPhoneNumber());
-                        }
-                    });
-                    return convertView;
-                }
-            };
-            setListAdapter(contactAdapter);
+                });
+            }
         }
     };
 }

@@ -49,8 +49,8 @@ public class ContactDetailsFragment extends Fragment {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         contactName = null;
         contactPhoneNumber = null;
     }
@@ -63,11 +63,6 @@ public class ContactDetailsFragment extends Fragment {
                 @Override
                 public void run() {
                     contactName.setText(contact.getName());
-                }
-            });
-            contactPhoneNumber.post(new Runnable() {
-                @Override
-                public void run() {
                     contactPhoneNumber.setText(contact.getPhoneNumber());
                 }
             });
