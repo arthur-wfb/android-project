@@ -44,6 +44,12 @@ public class ContactListFragment extends ListFragment {
         mService.getContacts(callback);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        view = null;
+    }
+
     private ResultListener callback = new ResultListener() {
         @Override
         public void onComplete(Contact[] result) {
@@ -62,8 +68,10 @@ public class ContactListFragment extends ListFragment {
                                 TextView nameView = (TextView) convertView.findViewById(R.id.contactName);
                                 TextView phoneNumberView = (TextView) convertView.findViewById(R.id.contactPhoneNumber);
                                 Contact currentContact = contacts[position];
-                                nameView.setText(currentContact.getName());
-                                phoneNumberView.setText(currentContact.getPhoneNumber());
+                                if (nameView != null && phoneNumberView != null){
+                                    nameView.setText(currentContact.getName());
+                                    phoneNumberView.setText(currentContact.getPhoneNumber());
+                                }
                                 return convertView;
                             }
                         };
