@@ -63,8 +63,10 @@ public class ContactDetailsFragment extends Fragment {
                 contactName.post(new Runnable() {
                     @Override
                     public void run() {
-                        contactName.setText(contact.getName());
-                        contactPhoneNumber.setText(contact.getPhoneNumber());
+                        if (contactName != null && contactPhoneNumber != null) {
+                            contactName.setText(contact.getName());
+                            contactPhoneNumber.setText(contact.getPhoneNumber());
+                        }
                     }
                 });
             }
