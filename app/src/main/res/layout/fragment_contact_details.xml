@@ -113,7 +113,37 @@
         android:text="@string/description"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.516"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/contactBirthDate" />
+
+    <TextView
+        android:id="@+id/contactBirthDate"
+        android:layout_width="0dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:text="@string/birth_date"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toStartOf="@+id/birthday_notify_switch"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/contactDetailsEmail2" />
+
+    <Switch
+        android:id="@+id/birthday_notify_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginRight="32dp"
+        android:gravity="center_vertical|left"
+        android:text="@string/birthday_notification"
+        android:textColor="@android:color/secondary_text_light"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/contactDetailsEmail2" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

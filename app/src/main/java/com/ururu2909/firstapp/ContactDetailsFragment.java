@@ -1,25 +1,39 @@
 package com.ururu2909.firstapp;
 
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-public class ContactDetailsFragment extends Fragment {
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
+public class ContactDetailsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
     private ContactsService mService;
     private TextView contactName;
     private TextView contactPhoneNumber;
+    private TextView contactBirthDate;
+    private AlarmManager alarmManager;
+    private PendingIntent alarmIntent;
 
     interface ResultListener {
         void onComplete(Contact result);
     }
-
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -44,32 +58,87 @@ public class ContactDetailsFragment extends Fragment {
         int index = this.getArguments().getInt("index");
         contactName = (TextView) view.findViewById(R.id.contactDetailsName);
         contactPhoneNumber = (TextView) view.findViewById(R.id.contactDetailsPhoneNumber);
+        contactBirthDate = (TextView) view.findViewById(R.id.contactBirthDate);
+        Switch birthdayNotifySwitch = (Switch) view.findViewById(R.id.birthday_notify_switch);
+        alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+        if (birthdayNotifySwitch != null) {
+            birthdayNotifySwitch.setOnCheckedChangeListener(this);
+            if (alarmManager != null){
+                boolean alarmUp = (PendingIntent.getBroadcast(getActivity(), index,
+                        new Intent(getActivity(), AlarmReceiver.class),
+                        PendingIntent.FLAG_NO_CREATE) != null);
+                if (alarmUp){
+                    birthdayNotifySwitch.setChecked(true);
+                } else {
+                    birthdayNotifySwitch.setChecked(false);
+                }
+            }
+        }
         mService.getContact(callback, index);
         return view;
     }
+
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         contactName = null;
         contactPhoneNumber = null;
+        contactBirthDate = null;
     }
 
     private ContactDetailsFragment.ResultListener callback = new ContactDetailsFragment.ResultListener() {
         @Override
         public void onComplete(Contact result) {
             final Contact contact = result;
-            if (contactName != null && contactPhoneNumber != null){
+            if (contactName != null && contactPhoneNumber != null && contactBirthDate !=null){
                 contactName.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (contactName != null && contactPhoneNumber != null) {
+                        if (contactName != null && contactPhoneNumber != null && contactBirthDate !=null) {
                             contactName.setText(contact.getName());
                             contactPhoneNumber.setText(contact.getPhoneNumber());
+                            contactBirthDate.setText(contact.getBirthDate());
                         }
                     }
                 });
             }
         }
     };
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        final int id = this.getArguments().getInt("index");
+        Activity context = getActivity();
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        if (isChecked){
+            if (contactBirthDate != null){
+                intent.putExtra("contactId", id);
+                intent.putExtra("text", "Сегодня день рождения у " + contactName.getText().toString());
+                intent.putExtra("birthDate", contactBirthDate.getText().toString());
+                alarmIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                String date = contactBirthDate.getText().toString();
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTimeInMillis(System.currentTimeMillis());
+                try {
+                    calendar.setTime(new SimpleDateFormat("dd/MM", Locale.ENGLISH).parse(date));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                        AlarmManager.INTERVAL_DAY, alarmIntent);
+            }
+        } else {
+            if (alarmManager != null){
+                alarmManager.cancel(PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT));
+                boolean alarmUp = (PendingIntent.getBroadcast(getActivity(), id,
+                        intent,
+                        PendingIntent.FLAG_NO_CREATE) != null);
+                if (!alarmUp){
+                    Log.d("xxx", "canceled");
+                }
+            }
+        }
+    }
 }
