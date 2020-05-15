@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -125,19 +126,12 @@ public class ContactDetailsFragment extends Fragment implements CompoundButton.O
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-
                 alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                        AlarmManager.INTERVAL_DAY, alarmIntent);
+                        DateUtils.YEAR_IN_MILLIS, alarmIntent);
             }
         } else {
             if (alarmManager != null){
                 alarmManager.cancel(PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT));
-                boolean alarmUp = (PendingIntent.getBroadcast(getActivity(), id,
-                        intent,
-                        PendingIntent.FLAG_NO_CREATE) != null);
-                if (!alarmUp){
-                    Log.d("xxx", "canceled");
-                }
             }
         }
     }
