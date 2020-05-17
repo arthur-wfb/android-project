@@ -131,7 +131,9 @@ public class ContactDetailsFragment extends Fragment implements CompoundButton.O
             }
         } else {
             if (alarmManager != null){
-                alarmManager.cancel(PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT));
+                alarmIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                alarmManager.cancel(alarmIntent);
+                alarmIntent.cancel();
             }
         }
     }
