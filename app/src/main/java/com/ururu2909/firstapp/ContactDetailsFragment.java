@@ -63,7 +63,6 @@ public class ContactDetailsFragment extends Fragment implements CompoundButton.O
         Switch birthdayNotifySwitch = (Switch) view.findViewById(R.id.birthday_notify_switch);
         alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
         if (birthdayNotifySwitch != null) {
-            birthdayNotifySwitch.setOnCheckedChangeListener(this);
             if (alarmManager != null){
                 boolean alarmUp = (PendingIntent.getBroadcast(getActivity(), index,
                         new Intent(getActivity(), AlarmReceiver.class),
@@ -74,6 +73,7 @@ public class ContactDetailsFragment extends Fragment implements CompoundButton.O
                     birthdayNotifySwitch.setChecked(false);
                 }
             }
+            birthdayNotifySwitch.setOnCheckedChangeListener(this);
         }
         mService.getContact(callback, index);
         return view;
@@ -114,11 +114,11 @@ public class ContactDetailsFragment extends Fragment implements CompoundButton.O
         Intent intent = new Intent(context, AlarmReceiver.class);
         if (isChecked){
             if (contactBirthDate != null){
-                intent.putExtra("contactId", id);
-                intent.putExtra("text", "Сегодня день рождения у " + contactName.getText().toString());
-                intent.putExtra("birthDate", contactBirthDate.getText().toString());
-                alarmIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                 String date = contactBirthDate.getText().toString();
+                intent.putExtra("contactId", id);
+                intent.putExtra("birthDate", date);
+                intent.putExtra("text", getString(R.string.today_birthday_notification_text) + contactName.getText().toString());
+                alarmIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(System.currentTimeMillis());
                 try {
@@ -126,8 +126,8 @@ public class ContactDetailsFragment extends Fragment implements CompoundButton.O
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                        DateUtils.YEAR_IN_MILLIS, alarmIntent);
+                alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                        alarmIntent);
             }
         } else {
             if (alarmManager != null){

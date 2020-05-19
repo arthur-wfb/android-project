@@ -9,7 +9,7 @@ class Contact {
     private final String birthdDate;
 
     static final Contact[] contacts = {
-            new Contact("Мама", "89547965236", "14/05"),
+            new Contact("Мама", "89547965236", "19/05"),
             new Contact("Юлий Цезарь", "89874563698", "17/03")
     };
 

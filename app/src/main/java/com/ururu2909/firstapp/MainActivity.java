@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements ServiceProvider {
         if (id != -1){
             ContactDetailsFragment detailsFragment = ContactDetailsFragment.newInstance((id));
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.container, detailsFragment).addToBackStack(null);
+            ft.replace(R.id.container, detailsFragment);
             ft.commit();
         } else {
             FragmentManager fm = getSupportFragmentManager();
