@@ -41,6 +41,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        calendar.set(Calendar.YEAR, Calendar.getInstance().get(Calendar.YEAR));
         calendar.add(Calendar.YEAR, 1);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, contactId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
