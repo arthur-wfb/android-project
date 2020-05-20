@@ -44,7 +44,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         calendar.add(Calendar.YEAR, 1);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, contactId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        calendar.add(Calendar.YEAR, 1);
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
     }
 }

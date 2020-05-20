@@ -126,6 +126,10 @@ public class ContactDetailsFragment extends Fragment implements CompoundButton.O
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+                calendar.set(Calendar.YEAR, Calendar.getInstance().get(Calendar.YEAR));
+                if(System.currentTimeMillis() > calendar.getTimeInMillis()) {
+                    calendar.add(Calendar.YEAR, 1);
+                }
                 alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                         alarmIntent);
             }
