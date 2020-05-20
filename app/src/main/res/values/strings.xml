@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">First app</string>
+    <string name="channel_name">Channel name</string>
+    <string name="channel_description">Channel description</string>
     <string name="contact_image">Contact image</string>
     <string name="contact_name">Contact name</string>
     <string name="contact_phone_number">Contact phone number</string>
@@ -8,4 +10,8 @@
     <string name="e_mail">E-mail</string>
     <string name="e_mail_2">E-mail 2</string>
     <string name="description">Description</string>
+    <string name="birth_date">Birth date</string>
+    <string name="birthday_notification">Напоминать</string>
+    <string name="birthday_notification_text">Напоминания о дне рождения</string>
+    <string name="today_birthday_notification_text">Сегодня день рождения у </string>
 </resources>
