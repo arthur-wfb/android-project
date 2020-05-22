@@ -12,12 +12,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.fragment.app.ListFragment;
 
+import java.util.ArrayList;
+
 public class ContactListFragment extends ListFragment {
     private ContactsService mService;
     private View view;
+    private ArrayList<Contact> contactsList;
 
     public interface ResultListener {
-        void onComplete(Contact[] result);
+        void onComplete(ArrayList<Contact> result);
     }
 
     @Override
@@ -30,7 +33,7 @@ public class ContactListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(@NonNull ListView l, @NonNull View v, int position, long id) {
-        ContactDetailsFragment detailsFragment = ContactDetailsFragment.newInstance((int) id);
+        ContactDetailsFragment detailsFragment = ContactDetailsFragment.newInstance((int) id, contactsList.get((int) id).getId());
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.container, detailsFragment).addToBackStack(null);
         ft.commit();
@@ -52,8 +55,9 @@ public class ContactListFragment extends ListFragment {
 
     private ResultListener callback = new ResultListener() {
         @Override
-        public void onComplete(Contact[] result) {
-            final Contact[] contacts = result;
+        public void onComplete(ArrayList<Contact> result) {
+            final ArrayList<Contact> contacts = new ArrayList<>(result);
+            contactsList = contacts;
             if (view != null){
                 view.post(new Runnable() {
                     @Override
@@ -65,12 +69,12 @@ public class ContactListFragment extends ListFragment {
                                 if (convertView == null){
                                     convertView = getLayoutInflater().inflate(R.layout.fragment_contact, null, false);
                                 }
-                                TextView nameView = (TextView) convertView.findViewById(R.id.contactName);
-                                TextView phoneNumberView = (TextView) convertView.findViewById(R.id.contactPhoneNumber);
-                                Contact currentContact = contacts[position];
+                                TextView nameView = convertView.findViewById(R.id.contactName);
+                                TextView phoneNumberView = convertView.findViewById(R.id.contactPhoneNumber);
+                                Contact currentContact = contacts.get(position);
                                 if (nameView != null && phoneNumberView != null){
                                     nameView.setText(currentContact.getName());
-                                    phoneNumberView.setText(currentContact.getPhoneNumber());
+                                    phoneNumberView.setText(currentContact.getPhoneNumber1());
                                 }
                                 return convertView;
                             }

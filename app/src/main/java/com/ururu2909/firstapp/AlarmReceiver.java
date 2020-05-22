@@ -12,15 +12,16 @@ import androidx.core.app.NotificationManagerCompat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String text = intent.getStringExtra("text");
-        int contactId = intent.getIntExtra("contactId", -1);
+        int contactIndex = intent.getIntExtra("contactIndex", -1);
+        String contactId = intent.getStringExtra("contactId");
         Intent activityIntent = new Intent(context, MainActivity.class);
+        activityIntent.putExtra("contactIndex", contactIndex);
         activityIntent.putExtra("contactId", contactId);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "CHANNEL")
@@ -44,7 +45,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         calendar.set(Calendar.YEAR, Calendar.getInstance().get(Calendar.YEAR));
         calendar.add(Calendar.YEAR, 1);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, contactId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, contactIndex, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
     }
 }
