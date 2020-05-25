@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements ServiceProvider, 
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
@@ -110,10 +111,9 @@ public class MainActivity extends AppCompatActivity implements ServiceProvider, 
                     Intent intent = new Intent(MainActivity.this, ContactsService.class);
                     bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
                 } else {
-                    Toast.makeText(this, "Приложению требуется разршенеие на чтение контактов.", Toast.LENGTH_LONG).show();
-                    finish();
+                    Toast.makeText(this, R.string.need_permission_msg, Toast.LENGTH_LONG).show();
+                    requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_REQUEST_CODE);
                 }
-
         }
     }
 }

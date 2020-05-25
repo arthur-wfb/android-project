@@ -14,4 +14,5 @@
     <string name="birthday_notification">Напоминать</string>
     <string name="birthday_notification_text">Напоминания о дне рождения</string>
     <string name="today_birthday_notification_text">Сегодня день рождения у </string>
+    <string name="need_permission_msg">"Приложению требуется разршенеие на чтение контактов"</string>
 </resources>
