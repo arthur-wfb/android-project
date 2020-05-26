@@ -112,7 +112,6 @@ public class MainActivity extends AppCompatActivity implements ServiceProvider, 
                     bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
                 } else {
                     Toast.makeText(this, R.string.need_permission_msg, Toast.LENGTH_LONG).show();
-                    requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_REQUEST_CODE);
                 }
         }
     }

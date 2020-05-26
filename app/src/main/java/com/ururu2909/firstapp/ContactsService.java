@@ -71,7 +71,9 @@ public class ContactsService extends Service {
                 } catch (Exception e){
                     Log.d("xxx", e.getMessage());
                 } finally {
-                    contactsCursor.close();
+                    if (contactsCursor != null){
+                        contactsCursor.close();
+                    }
                 }
                 ContactListFragment.ResultListener local = ref.get();
                 if (local != null){
