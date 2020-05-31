@@ -1,6 +1,6 @@
 package com.ururu2909.firstapp;
 
-class Contact {
+public class Contact {
     private String id;
     private String name;
     private String phoneNumber1;
@@ -9,7 +9,7 @@ class Contact {
     private String email2;
     private String birthDate;
 
-    Contact(String id, String name, String phoneNumber1, String phoneNumber2, String email1, String email2,String birthDate){
+    public Contact(String id, String name, String phoneNumber1, String phoneNumber2, String email1, String email2, String birthDate){
         this.id = id;
         this.name = name;
         this.phoneNumber1 = phoneNumber1;
@@ -19,7 +19,7 @@ class Contact {
         this.birthDate = birthDate;
     }
 
-    Contact(String id, String name, String phoneNumber1){
+    public Contact(String id, String name, String phoneNumber1){
         this(id, name, phoneNumber1, "None", "None", "None", "None");
     }
 
