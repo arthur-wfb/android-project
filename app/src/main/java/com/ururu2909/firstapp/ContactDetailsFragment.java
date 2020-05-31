@@ -34,6 +34,7 @@ public class ContactDetailsFragment extends Fragment implements CompoundButton.O
     private TextView contactEmail2;
     private TextView contactBirthDate;
     private AlarmManager alarmManager;
+    ContactsViewModel model;
 
     static ContactDetailsFragment newInstance(int index, String id) {
         ContactDetailsFragment f = new ContactDetailsFragment();
@@ -44,6 +45,12 @@ public class ContactDetailsFragment extends Fragment implements CompoundButton.O
         return f;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        model = new ViewModelProvider(requireActivity()).get(ContactsViewModel.class);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -51,7 +58,6 @@ public class ContactDetailsFragment extends Fragment implements CompoundButton.O
         View view = inflater.inflate(R.layout.fragment_contact_details, container, false);
         int index = this.getArguments().getInt("index");
         String id = this.getArguments().getString("id");
-        ContactsViewModel model = new ViewModelProvider(requireActivity()).get(ContactsViewModel.class);
 
         contactName = view.findViewById(R.id.contactDetailsName);
         contactPhoneNumber1 = view.findViewById(R.id.contactDetailsPhoneNumber);
@@ -75,31 +81,23 @@ public class ContactDetailsFragment extends Fragment implements CompoundButton.O
             }
             birthdayNotifySwitch.setOnCheckedChangeListener(this);
         }
+
         model.getContact(id).observe(getViewLifecycleOwner(), new Observer<Contact>() {
             @Override
             public void onChanged(final Contact contact) {
                 if (contactName != null && contactPhoneNumber1 != null && contactPhoneNumber2 !=null
-                        && contactEmail1 !=null && contactEmail2 !=null && contactBirthDate !=null){
-                    contactName.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (contactName != null && contactPhoneNumber1 != null && contactPhoneNumber2 !=null
-                                    && contactEmail1 !=null && contactEmail2 !=null && contactBirthDate !=null) {
-                                contactName.setText(contact.getName());
-                                contactPhoneNumber1.setText(contact.getPhoneNumber1());
-                                contactPhoneNumber2.setText(contact.getPhoneNumber2());
-                                contactEmail1.setText(contact.getEmail1());
-                                contactEmail2.setText(contact.getEmail2());
-                                contactBirthDate.setText(contact.getBirthDate());
-                            }
-                        }
-                    });
+                        && contactEmail1 !=null && contactEmail2 !=null && contactBirthDate !=null) {
+                    contactName.setText(contact.getName());
+                    contactPhoneNumber1.setText(contact.getPhoneNumber1());
+                    contactPhoneNumber2.setText(contact.getPhoneNumber2());
+                    contactEmail1.setText(contact.getEmail1());
+                    contactEmail2.setText(contact.getEmail2());
+                    contactBirthDate.setText(contact.getBirthDate());
                 }
             }
         });
         return view;
     }
-
 
     @Override
     public void onDestroyView() {
@@ -110,6 +108,12 @@ public class ContactDetailsFragment extends Fragment implements CompoundButton.O
         contactEmail1 = null;
         contactEmail2 = null;
         contactBirthDate = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        model = null;
+        super.onDestroy();
     }
 
     @Override

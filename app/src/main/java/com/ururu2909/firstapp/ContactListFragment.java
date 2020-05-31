@@ -22,6 +22,7 @@ import java.util.ArrayList;
 public class ContactListFragment extends ListFragment {
     private View view;
     private ArrayList<Contact> contactsList;
+    ContactsViewModel model;
 
     @Override
     public void onListItemClick(@NonNull ListView l, @NonNull View v, int position, long id) {
@@ -29,6 +30,12 @@ public class ContactListFragment extends ListFragment {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.container, detailsFragment).addToBackStack(null);
         ft.commit();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        model = new ViewModelProvider(requireActivity()).get(ContactsViewModel.class);
     }
 
     @Override
@@ -41,44 +48,42 @@ public class ContactListFragment extends ListFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ContactsViewModel model = new ViewModelProvider(requireActivity()).get(ContactsViewModel.class);
         model.getContactList().observe(getViewLifecycleOwner(), new Observer<ArrayList<Contact>>() {
             @Override
             public void onChanged(final ArrayList<Contact> contacts) {
                 contactsList = contacts;
-                if (view != null){
-                    view.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            final ArrayAdapter<Contact> contactAdapter = new ArrayAdapter<Contact>(getActivity(), 0, contacts){
-                                @NonNull
-                                @Override
-                                public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                                    if (convertView == null){
-                                        convertView = getLayoutInflater().inflate(R.layout.fragment_contact, null, false);
-                                    }
-                                    TextView nameView = convertView.findViewById(R.id.contactName);
-                                    TextView phoneNumberView = convertView.findViewById(R.id.contactPhoneNumber);
-                                    Contact currentContact = contacts.get(position);
-                                    if (nameView != null && phoneNumberView != null){
-                                        nameView.setText(currentContact.getName());
-                                        phoneNumberView.setText(currentContact.getPhoneNumber1());
-                                    }
-                                    return convertView;
-                                }
-                            };
-                            setListAdapter(contactAdapter);
+                final ArrayAdapter<Contact> contactAdapter = new ArrayAdapter<Contact>(getActivity(), 0, contacts){
+                    @NonNull
+                    @Override
+                    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                        if (convertView == null){
+                            convertView = getLayoutInflater().inflate(R.layout.fragment_contact, null, false);
                         }
-                    });
-                }
+                        TextView nameView = convertView.findViewById(R.id.contactName);
+                        TextView phoneNumberView = convertView.findViewById(R.id.contactPhoneNumber);
+                        Contact currentContact = contacts.get(position);
+                        if (nameView != null && phoneNumberView != null){
+                            nameView.setText(currentContact.getName());
+                            phoneNumberView.setText(currentContact.getPhoneNumber1());
+                        }
+                        return convertView;
+                    }
+                };
+                setListAdapter(contactAdapter);
             }
         });
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onStop() {
+        super.onStop();
         view = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        model = null;
     }
 }
