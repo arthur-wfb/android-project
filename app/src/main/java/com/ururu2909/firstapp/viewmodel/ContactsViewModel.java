@@ -26,7 +26,9 @@ public class ContactsViewModel extends AndroidViewModel {
     }
 
     public LiveData<Contact> getContact(String id){
-        contact = new MutableLiveData<>();
+        if (contact == null){
+            contact = new MutableLiveData<>();
+        }
         loadContact(id);
         return contact;
     }
