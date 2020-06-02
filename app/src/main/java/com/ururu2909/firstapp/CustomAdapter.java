@@ -9,8 +9,6 @@ import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,55 +16,59 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ContactViewHolder> implements Filterable {
-    private Context context;
     private ArrayList<Contact> contacts;
     private ArrayList<Contact> contactsAll;
     private CustomAdapter adapter;
+    private OnContactListener mOnContactListener;
 
-    CustomAdapter(Context context, ArrayList<Contact> contacts){
-        this.context = context;
+    CustomAdapter(ArrayList<Contact> contacts, OnContactListener mOnContactListener){
         this.contacts = contacts;
         this.contactsAll = new ArrayList<>(contacts);
         this.adapter = this;
+        this.mOnContactListener = mOnContactListener;
     }
 
-    static class ContactViewHolder extends RecyclerView.ViewHolder {
+    public class ContactViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView contactName;
         TextView contactNumber;
+        OnContactListener onContactListener;
 
-        ContactViewHolder(View v) {
+        ContactViewHolder(View v, OnContactListener onContactListener) {
             super(v);
             contactName = v.findViewById(R.id.contactName);
             contactNumber = v.findViewById(R.id.contactPhoneNumber);
+            this.onContactListener = onContactListener;
+
+            itemView.setOnClickListener(this);
         }
 
         void bind(Contact contact){
             contactName.setText(contact.getName());
             contactNumber.setText(contact.getPhoneNumber1());
         }
+
+        @Override
+        public void onClick(View v) {
+            onContactListener.onContactClick(contacts.get(getAdapterPosition()).getId());
+        }
+    }
+
+    public interface OnContactListener{
+        void onContactClick(String id);
     }
 
     @NonNull
     @Override
     public CustomAdapter.ContactViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_contact, parent, false);
-        return new ContactViewHolder(v);
+        final Context context = parent.getContext();
+        View view = LayoutInflater.from(context).inflate(R.layout.fragment_contact, parent, false);
+        return new ContactViewHolder(view, mOnContactListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull CustomAdapter.ContactViewHolder holder, final int position) {
         holder.bind(contacts.get(position));
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ContactDetailsFragment detailsFragment = ContactDetailsFragment.newInstance(position, contacts.get(position).getId());
-                FragmentTransaction ft = ((AppCompatActivity)context).getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.container, detailsFragment).addToBackStack(null);
-                ft.commit();
-            }
-        });
     }
 
     @Override

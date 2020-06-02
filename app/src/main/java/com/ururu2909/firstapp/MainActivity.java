@@ -35,10 +35,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     void addFragment(){
-        int index = getIntent().getIntExtra("contactIndex", -1);
-        if (index != -1){
-            String id = getIntent().getStringExtra("contactId");
-            ContactDetailsFragment detailsFragment = ContactDetailsFragment.newInstance(index, id);
+        String id = getIntent().getStringExtra("contactId");
+        if (id != null){
+            ContactDetailsFragment detailsFragment = ContactDetailsFragment.newInstance(id);
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.container, detailsFragment);
             ft.commit();

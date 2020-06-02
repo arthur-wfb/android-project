@@ -12,20 +12,23 @@ import androidx.appcompat.widget.SearchView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ururu2909.firstapp.viewmodel.ContactsViewModel;
+import com.ururu2909.firstapp.CustomAdapter.OnContactListener;
 
 import java.util.ArrayList;
 
-public class ContactsFragment extends Fragment {
+public class ContactsFragment extends Fragment implements OnContactListener {
     private RecyclerView recyclerView;
     private CustomAdapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
-    ContactsViewModel model;
+    private ContactsViewModel model;
+    private OnContactListener onContactListener = this;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,17 +47,17 @@ public class ContactsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contacts, container, false);
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView = view.findViewById(R.id.recycler_view);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         model.getContactList().observe(getViewLifecycleOwner(), new Observer<ArrayList<Contact>>() {
             @Override
             public void onChanged(ArrayList<Contact> contacts) {
-                adapter = new CustomAdapter(getActivity(), contacts);
+                adapter = new CustomAdapter(contacts, onContactListener);
                 recyclerView.setAdapter(adapter);
             }
         });
-
+        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
         return view;
     }
 
@@ -84,4 +87,11 @@ public class ContactsFragment extends Fragment {
         model = null;
     }
 
+    @Override
+    public void onContactClick(String id) {
+        ContactDetailsFragment detailsFragment = ContactDetailsFragment.newInstance(id);
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.container, detailsFragment).addToBackStack(null);
+        ft.commit();
+    }
 }
