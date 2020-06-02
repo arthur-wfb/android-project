@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         } else {
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
-            ContactListFragment fragment = new ContactListFragment();
+            ContactsFragment fragment = new ContactsFragment();
             ft.add(R.id.container, fragment);
             ft.commit();
         }
@@ -75,4 +75,5 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 }
         }
     }
+
 }

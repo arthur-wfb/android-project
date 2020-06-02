@@ -16,12 +16,11 @@ import java.util.ArrayList;
 public class ContactsViewModel extends AndroidViewModel {
     private MutableLiveData<Contact> contact;
     private MutableLiveData<ArrayList<Contact>> contactList;
-    private Context context;
-    Repository repository;
+    private Repository repository;
 
     public ContactsViewModel(@NonNull Application application) {
         super(application);
-        context = application.getApplicationContext();
+        Context context = application.getApplicationContext();
         repository = new Repository(context.getContentResolver());
     }
 
