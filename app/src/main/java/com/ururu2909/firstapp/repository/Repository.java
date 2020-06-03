@@ -64,6 +64,54 @@ public class Repository {
         return result;
     }
 
+    public ArrayList<Contact> getContactsByMatchOfName(String charSequence){
+        String id;
+        String contactName;
+        boolean hasNumber;
+        String phoneNumber = null;
+        ArrayList<Contact> result = new ArrayList<>();
+        ContentResolver contentResolver = weakContentResolver.get();
+        Cursor contactsCursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
+                new String[]{ContactsContract.Contacts._ID,
+                        ContactsContract.Contacts.DISPLAY_NAME,
+                        ContactsContract.Contacts.HAS_PHONE_NUMBER},
+                ContactsContract.Contacts.DISPLAY_NAME + " LIKE ?", new String[] { charSequence }, null);
+        try {
+            if ((contactsCursor != null ? contactsCursor.getCount() : 0) > 0){
+                while (contactsCursor.moveToNext()){
+                    id = contactsCursor.getString(contactsCursor.getColumnIndex(ContactsContract.Contacts._ID));
+                    contactName = contactsCursor.getString(contactsCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                    hasNumber = contactsCursor.getInt(contactsCursor.getColumnIndex(
+                            ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0;
+                    if (hasNumber) {
+                        Cursor phoneCursor = contentResolver.query(
+                                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                null,
+                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                                new String[]{id}, null);
+                        try {
+                            phoneCursor.moveToFirst();
+                            phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(
+                                    ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        } catch (Exception e) {
+                            Log.d("xxx", e.getMessage());
+                        } finally {
+                            phoneCursor.close();
+                        }
+                    }
+                    result.add(new Contact(id, contactName, phoneNumber != null ? phoneNumber : "None"));
+                }
+            }
+        } catch (Exception e){
+            Log.d("xxx", e.getMessage());
+        } finally {
+            if (contactsCursor != null){
+                contactsCursor.close();
+            }
+        }
+        return result;
+    }
+
     public Contact getContact(final String id){
         String contactName = null;
         ArrayList<String> phoneNumbers = new ArrayList<>();

@@ -54,7 +54,7 @@ public class ContactDetailsFragment extends Fragment implements CompoundButton.O
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        getActivity().setTitle("Детали контакта");
+        getActivity().setTitle(R.string.contact_details);
         View view = inflater.inflate(R.layout.fragment_contact_details, container, false);
         String id = this.getArguments().getString("id");
         contactIdHash = id.hashCode();

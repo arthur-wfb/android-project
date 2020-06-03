@@ -40,7 +40,7 @@ public class ContactsFragment extends Fragment implements OnContactListener {
     @Override
     public void onStart() {
         super.onStart();
-        getActivity().setTitle("Список контактов");
+        getActivity().setTitle(R.string.contact_list);
     }
 
     @Nullable
@@ -50,10 +50,11 @@ public class ContactsFragment extends Fragment implements OnContactListener {
         recyclerView = view.findViewById(R.id.recycler_view);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
+        adapter = new CustomAdapter(onContactListener);
         model.getContactList().observe(getViewLifecycleOwner(), new Observer<ArrayList<Contact>>() {
             @Override
             public void onChanged(ArrayList<Contact> contacts) {
-                adapter = new CustomAdapter(contacts, onContactListener);
+                adapter.setData(contacts);
                 recyclerView.setAdapter(adapter);
             }
         });
@@ -74,7 +75,7 @@ public class ContactsFragment extends Fragment implements OnContactListener {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                adapter.getFilter().filter(newText);
+                model.loadContactListByMatchOfName(newText);
                 return false;
             }
         });
@@ -84,7 +85,6 @@ public class ContactsFragment extends Fragment implements OnContactListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        model = null;
     }
 
     @Override
