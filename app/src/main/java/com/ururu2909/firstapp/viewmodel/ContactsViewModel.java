@@ -44,7 +44,7 @@ public class ContactsViewModel extends AndroidViewModel {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                contactList.postValue(repository.getContactsByMatchOfName("%"+charSequence+"%"));
+                contactList.postValue(repository.getContactsByMatchOfName(charSequence));
             }
         }).start();
     }

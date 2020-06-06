@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
 public class CustomAdapter extends ListAdapter<Contact, CustomAdapter.ContactViewHolder> {
     private OnContactListener mOnContactListener;
-    private ArrayList<Contact> contacts;
 
     CustomAdapter(OnContactListener mOnContactListener){
         super(DIFF_CALLBACK);
@@ -23,26 +22,25 @@ public class CustomAdapter extends ListAdapter<Contact, CustomAdapter.ContactVie
     }
 
     void setData(ArrayList<Contact> contacts){
-        this.contacts = contacts;
         submitList(contacts);
     }
 
     @NonNull
     @Override
-    public CustomAdapter.ContactViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ContactViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final Context context = parent.getContext();
         View view = LayoutInflater.from(context).inflate(R.layout.fragment_contact, parent, false);
-        return new ContactViewHolder(view, mOnContactListener);
+        return new ContactViewHolder(view, mOnContactListener, this);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CustomAdapter.ContactViewHolder holder, final int position) {
-        holder.bind(contacts.get(position));
+    public void onBindViewHolder(@NonNull ContactViewHolder holder, final int position) {
+        holder.bind(getItem(position));
     }
 
     @Override
     public int getItemCount() {
-        return contacts.size();
+        return getCurrentList().size();
     }
 
     public interface OnContactListener{
@@ -62,13 +60,15 @@ public class CustomAdapter extends ListAdapter<Contact, CustomAdapter.ContactVie
         }
     };
 
-    public class ContactViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView contactName;
-        TextView contactNumber;
-        OnContactListener onContactListener;
+    public static class ContactViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private TextView contactName;
+        private TextView contactNumber;
+        private CustomAdapter.OnContactListener onContactListener;
+        private CustomAdapter adapter;
 
-        ContactViewHolder(View v, OnContactListener onContactListener) {
+        ContactViewHolder(View v, CustomAdapter.OnContactListener onContactListener, CustomAdapter adapter) {
             super(v);
+            this.adapter = adapter;
             contactName = v.findViewById(R.id.contactName);
             contactNumber = v.findViewById(R.id.contactPhoneNumber);
             this.onContactListener = onContactListener;
@@ -84,7 +84,7 @@ public class CustomAdapter extends ListAdapter<Contact, CustomAdapter.ContactVie
         public void onClick(View v) {
             int position = getAdapterPosition();
             if (position != RecyclerView.NO_POSITION){
-                onContactListener.onContactClick(contacts.get(position).getId());
+                onContactListener.onContactClick(adapter.getCurrentList().get(position).getId());
             }
         }
     }

@@ -51,13 +51,15 @@ public class ContactsFragment extends Fragment implements OnContactListener {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         adapter = new CustomAdapter(onContactListener);
+        adapter.setHasStableIds(true);
+        adapter.setData(new ArrayList<Contact>());
         model.getContactList().observe(getViewLifecycleOwner(), new Observer<ArrayList<Contact>>() {
             @Override
             public void onChanged(ArrayList<Contact> contacts) {
                 adapter.setData(contacts);
-                recyclerView.setAdapter(adapter);
             }
         });
+        recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
         return view;
     }
