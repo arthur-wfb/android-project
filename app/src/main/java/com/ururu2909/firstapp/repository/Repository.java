@@ -17,17 +17,30 @@ public class Repository {
     }
 
     public ArrayList<Contact> getContacts(){
+        return getContactsByMatchOfName("");
+    }
+
+    public ArrayList<Contact> getContactsByMatchOfName(String charSequence){
         String id;
         String contactName;
         boolean hasNumber;
+        String selection;
+        String[] args;
         String phoneNumber = null;
+        if (charSequence.equals("")){
+            selection = null;
+            args = null;
+        } else {
+            selection = ContactsContract.Contacts.DISPLAY_NAME + " LIKE ?";
+            args = new String[] { "%"+charSequence+"%" };
+        }
         ArrayList<Contact> result = new ArrayList<>();
         ContentResolver contentResolver = weakContentResolver.get();
         Cursor contactsCursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
                 new String[]{ContactsContract.Contacts._ID,
                         ContactsContract.Contacts.DISPLAY_NAME,
                         ContactsContract.Contacts.HAS_PHONE_NUMBER},
-                null, null, null);
+                        selection, args, null);
         try {
             if ((contactsCursor != null ? contactsCursor.getCount() : 0) > 0){
                 while (contactsCursor.moveToNext()){

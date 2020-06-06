@@ -34,12 +34,12 @@ public class ContactDetailsFragment extends Fragment implements CompoundButton.O
     private TextView contactEmail2;
     private TextView contactBirthDate;
     private AlarmManager alarmManager;
-    ContactsViewModel model;
+    private ContactsViewModel model;
+    private int contactIdHash;
 
-    static ContactDetailsFragment newInstance(int index, String id) {
+    static ContactDetailsFragment newInstance(String id) {
         ContactDetailsFragment f = new ContactDetailsFragment();
         Bundle args = new Bundle();
-        args.putInt("index", index);
         args.putString("id", id);
         f.setArguments(args);
         return f;
@@ -54,10 +54,10 @@ public class ContactDetailsFragment extends Fragment implements CompoundButton.O
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        getActivity().setTitle("Детали контакта");
+        getActivity().setTitle(R.string.contact_details);
         View view = inflater.inflate(R.layout.fragment_contact_details, container, false);
-        int index = this.getArguments().getInt("index");
         String id = this.getArguments().getString("id");
+        contactIdHash = id.hashCode();
 
         contactName = view.findViewById(R.id.contactDetailsName);
         contactPhoneNumber1 = view.findViewById(R.id.contactDetailsPhoneNumber);
@@ -70,7 +70,7 @@ public class ContactDetailsFragment extends Fragment implements CompoundButton.O
         alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
         if (birthdayNotifySwitch != null) {
             if (alarmManager != null){
-                boolean alarmUp = (PendingIntent.getBroadcast(getActivity(), index,
+                boolean alarmUp = (PendingIntent.getBroadcast(getActivity(), contactIdHash,
                         new Intent(getActivity(), AlarmReceiver.class),
                         PendingIntent.FLAG_NO_CREATE) != null);
                 if (alarmUp){
@@ -118,17 +118,15 @@ public class ContactDetailsFragment extends Fragment implements CompoundButton.O
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        final int index = this.getArguments().getInt("index");
         Activity context = getActivity();
         Intent intent = new Intent(context, AlarmReceiver.class);
         PendingIntent alarmIntent;
         if (isChecked){
             if (contactBirthDate != null){
                 String date = contactBirthDate.getText().toString();
-                intent.putExtra("contactIndex", index);
                 intent.putExtra("birthDate", date);
                 intent.putExtra("text", getString(R.string.today_birthday_notification_text) + contactName.getText().toString());
-                alarmIntent = PendingIntent.getBroadcast(context, index, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                alarmIntent = PendingIntent.getBroadcast(context, contactIdHash, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(System.currentTimeMillis());
                 try {
@@ -145,7 +143,7 @@ public class ContactDetailsFragment extends Fragment implements CompoundButton.O
             }
         } else {
             if (alarmManager != null){
-                alarmIntent = PendingIntent.getBroadcast(context, index, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                alarmIntent = PendingIntent.getBroadcast(context, contactIdHash, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                 alarmManager.cancel(alarmIntent);
                 alarmIntent.cancel();
             }

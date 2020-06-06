@@ -35,17 +35,16 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     void addFragment(){
-        int index = getIntent().getIntExtra("contactIndex", -1);
-        if (index != -1){
-            String id = getIntent().getStringExtra("contactId");
-            ContactDetailsFragment detailsFragment = ContactDetailsFragment.newInstance(index, id);
+        String id = getIntent().getStringExtra("contactId");
+        if (id != null){
+            ContactDetailsFragment detailsFragment = ContactDetailsFragment.newInstance(id);
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.container, detailsFragment);
             ft.commit();
         } else {
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
-            ContactListFragment fragment = new ContactListFragment();
+            ContactsFragment fragment = new ContactsFragment();
             ft.add(R.id.container, fragment);
             ft.commit();
         }
@@ -75,4 +74,5 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 }
         }
     }
+
 }
